@@ -1,6 +1,6 @@
 # Installed into the implementation repo by the implement-service skill
 # (step 6). Replace every clients or walks with the service name and every
-# dataGriff/dog-walking-spec with the spec repo's owner/repo when copying.
+# hungovercoders/dog-walking-spec with the spec repo's owner/repo when copying.
 #
 # The pull half of the contract sync loop: Renovate bumps contracts.lock
 # when the spec repo tags a new clients or walks/v<x.y.z>; this workflow runs the
@@ -68,7 +68,7 @@ jobs:
           ok=true; versions=""
           while read -r version sha; do
             [ -n "$version" ] || continue
-            tag_sha=$(git ls-remote https://github.com/dataGriff/dog-walking-spec "refs/tags/$version" | cut -f1)
+            tag_sha=$(git ls-remote https://github.com/hungovercoders/dog-walking-spec "refs/tags/$version" | cut -f1)
             [ -n "$tag_sha" ] || { echo "::error::tag $version does not exist in the spec repo"; exit 1; }
             versions="$versions $version"
             if [ "$sha" != "$tag_sha" ]; then

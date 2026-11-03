@@ -10,7 +10,7 @@
         "version: clients\\/v(?<currentValue>[0-9.]+)\\s+sha: (?<currentDigest>[a-f0-9]{40})"
       ],
       "depNameTemplate": "dog-walking-spec/clients",
-      "packageNameTemplate": "https://github.com/dataGriff/dog-walking-spec",
+      "packageNameTemplate": "https://github.com/hungovercoders/dog-walking-spec",
       "datasourceTemplate": "git-tags",
       "versioningTemplate": "semver",
       "extractVersionTemplate": "^clients/v(?<version>.+)$"
@@ -22,7 +22,7 @@
         "version: walks\\/v(?<currentValue>[0-9.]+)\\s+sha: (?<currentDigest>[a-f0-9]{40})"
       ],
       "depNameTemplate": "dog-walking-spec/walks",
-      "packageNameTemplate": "https://github.com/dataGriff/dog-walking-spec",
+      "packageNameTemplate": "https://github.com/hungovercoders/dog-walking-spec",
       "datasourceTemplate": "git-tags",
       "versioningTemplate": "semver",
       "extractVersionTemplate": "^walks/v(?<version>.+)$"

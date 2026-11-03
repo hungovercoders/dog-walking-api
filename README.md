@@ -1,7 +1,7 @@
 # dog-walking-api
 
 The implementation of the **clients** and **walks** services of the
-[dog-walking specs](https://github.com/dataGriff/dog-walking-spec), on
+[dog-walking specs](https://github.com/hungovercoders/dog-walking-spec), on
 Cloudflare Workers. The contracts decide what it does; this repo decides
 how:
 
