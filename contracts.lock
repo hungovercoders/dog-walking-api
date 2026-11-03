@@ -2,7 +2,7 @@
 # Renovate bumps them; `task contracts:fetch` checks the shas out read-only.
 # clients
 version: clients/v1.0.0
-sha: 643845d9f4d5a75bd1a95fc489f641424aadc603
+sha: 6e54ca0ecb88205f3cd2dfd787ba705f9dc03f79
 # walks
 version: walks/v1.0.0
-sha: 643845d9f4d5a75bd1a95fc489f641424aadc603
+sha: 6e54ca0ecb88205f3cd2dfd787ba705f9dc03f79
