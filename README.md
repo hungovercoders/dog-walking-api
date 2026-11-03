@@ -82,14 +82,14 @@ One-time, with `wrangler login`:
 
 ```sh
 npx wrangler d1 create dog-walking            # paste the id into wrangler.jsonc
-npx wrangler queues create dog-walking-events
-npx wrangler queues create dog-walking-events-dlq
 npx wrangler secret put CLERK_SECRET_KEY
 npx wrangler secret put CLERK_AUTHORIZED_PARTIES   # the web app's origin(s), comma-separated
 ```
 
-Then every push to `main` runs `.github/workflows/deploy.yml`: migrations
-with `wrangler d1 migrations apply --remote`, then `wrangler deploy`.
+Then every push to `main` runs `.github/workflows/deploy.yml`: it creates
+the `dog-walking-events` and `dog-walking-events-dlq` queues if they are
+missing, applies migrations with `wrangler d1 migrations apply --remote`,
+then runs `wrangler deploy`.
 Repository secrets: `CLOUDFLARE_API_TOKEN` (Workers Scripts, D1 and
 Queues edit) and `CLOUDFLARE_ACCOUNT_ID`. Point the web app's
 `API_BASE_URL` at the deployed worker.
