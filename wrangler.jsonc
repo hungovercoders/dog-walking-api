@@ -14,8 +14,7 @@
     {
       "binding": "DB",
       "database_name": "dog-walking",
-      // Replace with the id `wrangler d1 create dog-walking` prints.
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "cde08af9-cc98-4b06-bdec-e8cb4958783b",
       "migrations_dir": "migrations"
     }
   ],
