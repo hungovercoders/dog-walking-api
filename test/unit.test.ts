@@ -1,8 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { present } from "../src/problem";
 import { envelope, SOURCE, TYPES } from "../src/events/cloudevents";
 import { outboxRow } from "../src/events/outbox";
 import { resolveWalker } from "../src/auth";
+import { verifyToken } from "@clerk/backend";
+
+vi.mock("@clerk/backend", () => ({ verifyToken: vi.fn() }));
+const verify = vi.mocked(verifyToken);
 
 describe("present", () => {
   it("drops null and undefined members so optional contract fields are absent", () => {
@@ -47,5 +51,29 @@ describe("test-mode auth", () => {
   });
   it("clerk mode without a secret key rejects every token", async () => {
     expect(await resolveWalker("test:walker-anna", { AUTH_MODE: "clerk" } as typeof env)).toBeNull();
+  });
+});
+
+describe("clerk-mode auth", () => {
+  const env = {
+    AUTH_MODE: "clerk",
+    CLERK_SECRET_KEY: "sk_test_x",
+    CLERK_AUTHORIZED_PARTIES: "https://app.example, https://preview.example",
+  } as Parameters<typeof resolveWalker>[1];
+  it("takes the subject of a verified token as the walker, with the parties split and trimmed", async () => {
+    verify.mockResolvedValueOnce({ sub: "user_1" } as never);
+    expect(await resolveWalker("jwt", env)).toBe("user_1");
+    expect(verify).toHaveBeenCalledWith("jwt", {
+      secretKey: "sk_test_x",
+      authorizedParties: ["https://app.example", "https://preview.example"],
+    });
+  });
+  it("rejects a token Clerk refuses and logs the reason, never the token", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    verify.mockRejectedValueOnce(new Error("Invalid JWT Authorized party claim (azp)"));
+    expect(await resolveWalker("jwt", env)).toBeNull();
+    expect(warn).toHaveBeenCalledWith("clerk: session token rejected:", "Invalid JWT Authorized party claim (azp)");
+    expect(JSON.stringify(warn.mock.calls)).not.toContain("jwt");
+    warn.mockRestore();
   });
 });

@@ -23,7 +23,11 @@ export async function resolveWalker(
       ...(authorizedParties?.length ? { authorizedParties } : {}),
     });
     return payload.sub ?? null;
-  } catch {
+  } catch (err) {
+    // verifyToken throws on a bad signature, expiry, or an authorized-party
+    // mismatch. Log the reason - never the token - so a 401 can be diagnosed
+    // from the worker's logs.
+    console.warn("clerk: session token rejected:", err instanceof Error ? err.message : String(err));
     return null;
   }
 }
