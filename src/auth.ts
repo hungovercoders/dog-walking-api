@@ -15,7 +15,10 @@ export async function resolveWalker(
   if (env.AUTH_MODE === "test") {
     return token.startsWith("test:") && token.length > 5 ? token.slice(5) : null;
   }
-  if (!env.CLERK_SECRET_KEY) return null;
+  if (!env.CLERK_SECRET_KEY) {
+    console.warn("auth: rejected a session token - CLERK_SECRET_KEY is not set on this worker");
+    return null;
+  }
   try {
     const authorizedParties = env.CLERK_AUTHORIZED_PARTIES?.split(",").map((s) => s.trim()).filter(Boolean);
     const payload = await verifyToken(token, {
@@ -23,7 +26,14 @@ export async function resolveWalker(
       ...(authorizedParties?.length ? { authorizedParties } : {}),
     });
     return payload.sub ?? null;
-  } catch {
+  } catch (err) {
+    // Why, for the worker's logs: a refused token looks the same to the
+    // caller whether the key is from another Clerk instance, the caller's
+    // origin is not an authorized party, or the token expired. Clerk's
+    // reason and message describe the claim that failed, never the token.
+    const reason = (err as { reason?: unknown } | null)?.reason;
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`auth: rejected a session token - ${typeof reason === "string" ? reason : "verification failed"}: ${message}`);
     return null;
   }
 }
