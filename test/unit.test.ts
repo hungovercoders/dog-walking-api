@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { present } from "../src/problem";
 import { envelope, SOURCE, TYPES } from "../src/events/cloudevents";
 import { outboxRow } from "../src/events/outbox";
@@ -45,7 +45,19 @@ describe("test-mode auth", () => {
     expect(await resolveWalker("test:", env)).toBeNull();
     expect(await resolveWalker("eyJhbGci.fake.jwt", env)).toBeNull();
   });
-  it("clerk mode without a secret key rejects every token", async () => {
+  it("clerk mode without a secret key rejects every token and logs why", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     expect(await resolveWalker("test:walker-anna", { AUTH_MODE: "clerk" } as typeof env)).toBeNull();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("CLERK_SECRET_KEY is not set"));
+    warn.mockRestore();
+  });
+  it("clerk mode logs the reason a token failed verification, not the token", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const token = "eyJhbGci.fake.jwt";
+    expect(await resolveWalker(token, { AUTH_MODE: "clerk", CLERK_SECRET_KEY: "sk_test_x" } as typeof env)).toBeNull();
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.mock.calls[0][0]).toContain("auth: rejected a session token");
+    expect(warn.mock.calls[0][0]).not.toContain(token);
+    warn.mockRestore();
   });
 });
